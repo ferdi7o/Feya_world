@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Моите Поръчки{% endblock %}
+
+{% block content %}
+<h3>Вашите поръчки (Sipariş Takibi)</h3>
+<table class="table table-hover mt-4 shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Обща сума</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.created|date:"d.m.Y H:i" }}</td>
+            <td>
+                <span class="badge
+                    {% if order.status == 'Pending' %}bg-warning{% elif order.status == 'Shipped' %}bg-primary{% else %}bg-success{% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </td>
+            <td>{{ order.total_paid }} лв.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

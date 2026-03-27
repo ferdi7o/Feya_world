@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Вашата количка{% endblock %}
+
+{% block content %}
+<h2>Вашата количка</h2>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Продукт</th>
+            <th>Размер</th>
+            <th>Количество</th>
+            <th>Цена</th>
+            <th>Общо</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <td>{{ item.product.title }}</td>
+            <td>{{ item.size|default:"-" }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price }} лв.</td>
+            <td>{{ item.total_price }} лв.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="text-end">
+    <h4>Общо: {{ cart.get_total_price }} лв.</h4>
+    <a href="{% url 'order_create' %}" class="btn btn-primary btn-lg">Завърши поръчката</a>
+</div>
+{% endblock %}

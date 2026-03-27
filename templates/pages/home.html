@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Начало - Печатница за Тениски{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-primary">Добре дошли в нашия магазин!</h1>
+        <p class="col-md-8 fs-4">Персонализирани тениски, чаши, кърпи и много други с високо качество на печат.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg">Виж всички продукти</a>
+    </div>
+</div>
+
+<h2 class="mb-4">Най-новите ни предложения</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for product in latest_products %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            {% with product.images.first as main_img %}
+                {% if main_img %}
+                    <img src="{{ main_img.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+            {% endwith %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text text-success fw-bold">{{ product.price }} лв.</p>
+                <a href="{% url 'product_detail' product.pk %}" class="btn btn-outline-dark w-100">Виж повече</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

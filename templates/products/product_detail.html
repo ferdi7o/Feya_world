@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div id="productCarousel" class="carousel slide shadow" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for img in product.images.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ img.image.url }}" class="d-block w-100" style="height: 500px; object-fit: contain;">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle"></span>
+            </button>
+        </div>
+
+        <div class="d-flex mt-3 gap-2">
+            {% for img in product.images.all %}
+            <img src="{{ img.image.url }}" class="img-thumbnail" style="width: 80px; height: 80px; cursor: pointer;"
+                 onclick="document.querySelector('#productCarousel').querySelectorAll('.carousel-item').forEach(i => i.classList.remove('active'));
+                          document.querySelectorAll('.carousel-item')[{{ forloop.counter0 }}].classList.add('active');">
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h2>{{ product.title }}</h2>
+        <p class="text-muted">Категория: {{ product.category.name }}</p>
+        <h3 class="text-primary my-3">{{ product.price }} лв.</h3>
+
+        <div class="my-4 p-3 bg-light rounded">
+            <h5>Изберете опции:</h5>
+            {% if product.product_type == 'tshirt' or product.product_type == 'towel' or product.product_type == 'blanket' %}
+                <select class="form-select mb-3">
+                    <option selected>Изберете размер (Size)</option>
+                    {% for variant in product.variants.all %}
+                        <option value="{{ variant.id }}">{{ variant.size }} (Налично: {{ variant.stock }})</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+                <p class="text-info">Този продукт е със стандартен размер.</p>
+            {% endif %}
+
+            <button class="btn btn-success btn-lg w-100">Добави в количката</button>
+        </div>
+
+        {% if product.is_shipping_free %}
+            <p class="text-success fw-bold">✓ Безплатна доставка!</p>
+        {% endif %}
+    </div>
+</div>
+
+<hr class="my-5">
+<div class="row">
+    <div class="col-md-8">
+        <h4>Коментари и Оценки</h4>
+        {% for review in reviews %}
+            <div class="card mb-3 p-3">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ review.user.username }}</strong>
+                    <span class="badge bg-warning text-dark">{{ review.rating }} / 10 ★</span>
+                </div>
+                <p class="mt-2">{{ review.content }}</p>
+            </div>
+        {% empty %}
+            <p>Все още няма коментари. Бъдете първият!</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            <div class="card p-4 mt-4">
+                <h5>Остави коментар</h5>
+                <p class="text-muted small">Можете да дадете оценка от 1 до 10.</p>
+            </div>
+        {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="card p-4 mt-4 shadow-sm">
+            <h5>Оставете вашето мнение</h5>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ review_form.rating.label_tag }}
+                    {{ review_form.rating }}
+                </div>
+                <div class="mb-3">
+                    {{ review_form.content.label_tag }}
+                    {{ review_form.content }}
+                </div>
+                <button type="submit" class="btn btn-primary">Изпрати коментар</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4">
+            Моля, <a href="{% url 'login' %}">влезте</a>, за да оставите коментар.
+        </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

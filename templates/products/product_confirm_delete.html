@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-danger shadow">
+        <h3>Сигурни ли сте?</h3>
+        <p>Наистина ли искате да изтриете продукта: <strong>{{ object.title }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Да, изтрий го!</button>
+            <a href="{% url 'product_detail' object.id %}" class="btn btn-secondary">Отказ</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

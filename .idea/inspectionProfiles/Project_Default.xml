@@ -1,0 +1,34 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="pillow" />
+          <option value="attrs" />
+          <option value="autobahn" />
+          <option value="Automat" />
+          <option value="cffi" />
+          <option value="channels" />
+          <option value="constantly" />
+          <option value="cryptography" />
+          <option value="daphne" />
+          <option value="hyperlink" />
+          <option value="idna" />
+          <option value="Incremental" />
+          <option value="packaging" />
+          <option value="pyasn1" />
+          <option value="pyasn1_modules" />
+          <option value="pycparser" />
+          <option value="pyOpenSSL" />
+          <option value="service-identity" />
+          <option value="tomli" />
+          <option value="Twisted" />
+          <option value="txaio" />
+          <option value="zope.interface" />
+          <option value="python-dotenv" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

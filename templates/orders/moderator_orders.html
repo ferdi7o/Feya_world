@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Модераторски Панел{% endblock %}
+
+{% block content %}
+<h2 class="text-danger">Управление на поръчки (Moderator Paneli)</h2>
+<div class="card p-3">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Потребител</th>
+                <th>Адрес</th>
+                <th>Текущ Статус</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in all_orders %}
+            <tr>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.city }}, {{ order.address }}</td>
+                <td><strong>{{ order.get_status_display }}</strong></td>
+                <td>
+                    <a href="{% url 'order_status_update' order.id %}" class="btn btn-sm btn-outline-info">Промени Статус</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </tbody>
+</table>
+</div>
+{% endblock %}

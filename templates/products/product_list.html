@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Всички Продукти - Печатница{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Нашите Продукти</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for product in products %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% with product.images.first as main_img %}
+                {% if main_img %}
+                    <img src="{{ main_img.image.url }}" class="card-img-top" alt="{{ product.title }}" style="height: 250px; object-fit: cover;">
+                {% endif %}
+            {% endwith %}
+
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text text-muted">{{ product.get_product_type_display }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="h5 mb-0 text-primary">{{ product.price }} лв.</span>
+                    <a href="{% url 'product_detail' product.pk %}" class="btn btn-outline-dark">Виж детайли</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Все още няма добавени продукти.</p>
+    {% endfor %}
+</div>
+{% endblock %}
