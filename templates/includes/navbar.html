@@ -1,0 +1,12 @@
+<div class="navbar-nav ms-auto">
+    {% if user.is_authenticated %}
+        {% if user.is_moderator %}
+            <a class="nav-link text-warning fw-bold" href="{% url 'product_create' %}">+ Добави обява</a>
+            <a class="nav-link" href="{% url 'moderator_order_list' %}">Поръчки (Admin)</a>
+        {% endif %}
+
+        <a class="nav-link" href="{% url 'order_list' %}">Моите Поръчки</a>
+        <a class="nav-link" href="{% url 'profile' %}">Профил ({{ user.username }})</a>
+        {% else %}
+        {% endif %}
+</div>

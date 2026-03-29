@@ -21,6 +21,17 @@
             </button>
         </div>
 
+{#        moderator panel #}
+    {% if user.is_authenticated and user.is_moderator %}
+        <div class="alert alert-secondary d-flex justify-content-between align-items-center shadow-sm">
+            <span class="fw-bold text-danger">Административен панел:</span>
+            <div>
+                <a href="{% url 'product_update' product.id %}" class="btn btn-sm btn-warning">Редактирай (Düzenle)</a>
+                <a href="{% url 'product_delete' product.id %}" class="btn btn-sm btn-danger">Изтрий (Sil)</a>
+            </div>
+        </div>
+    {% endif %}
+
         <div class="d-flex mt-3 gap-2">
             {% for img in product.images.all %}
             <img src="{{ img.image.url }}" class="img-thumbnail" style="width: 80px; height: 80px; cursor: pointer;"
