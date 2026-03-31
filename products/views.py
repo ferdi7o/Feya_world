@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView
-from .models import Product, Review
+from .models import Product, Review, ProductImage
 from django.shortcuts import redirect
 from django.contrib import messages
 from .forms import ReviewForm, ProductForm
@@ -34,7 +34,6 @@ class ProductDetailView(DetailView):
             return redirect('login')
 
         if form.is_valid():
-            # Kullanıcının daha önce yorum yapıp yapmadığını kontrol et (Ödev kuralı)
             if Review.objects.filter(product=self.object, user=request.user).exists():
                 messages.warning(request, "Вече сте дали оценка за този продукт.")
             else:
@@ -57,6 +56,14 @@ class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.is_moderator
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        images = self.request.FILES.getlist('images')
+        for img in images:
+            ProductImage.objects.create(product=self.object, image=img)
+
+        return response
+
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     template_name = 'products/product_confirm_delete.html'
@@ -64,3 +71,22 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.is_moderator
+
+
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'products/product_form.html'  # CreateView ile aynı template'i kullanabiliriz
+
+    def test_func(self):
+        return self.request.user.is_moderator
+
+    def get_success_url(self):
+        return reverse_lazy('product_detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        images = self.request.FILES.getlist('images')
+        for img in images:
+            ProductImage.objects.create(product=self.object, image=img)
+        return response

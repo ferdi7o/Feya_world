@@ -1,7 +1,5 @@
-
-from .models import Review
 from django import forms
-from .models import Product, ProductVariant
+from .models import Product, Review, ProductVariant
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -27,26 +25,37 @@ class ReviewForm(forms.ModelForm):
 
     def clean_rating(self):
         rating = self.cleaned_data.get('rating')
-        if rating < 1 or rating > 10:
+        if rating and (rating < 1 or rating > 10):
             raise forms.ValidationError("Моля, въведете оценка между 1 и 10.")
         return rating
 
 class ProductForm(forms.ModelForm):
+    images = forms.ImageField(
+        label="Снимки (изберете няколко)",
+        required=False,
+        help_text="Можете да изберете няколко снимки наведнъж."
+    )
+
     class Meta:
         model = Product
-        # Bazı alanları hariç tutuyoruz (Exclude requirement)
-        exclude = ['created_at', 'updated_at']
-        labels = {
-            'title': 'Име на продукта',
-            'price': 'Цена (лв)',
-            'product_type': 'Тип на продукта',
+        fields = ['title', 'category', 'description', 'price', 'product_type', 'is_shipping_free', 'shipping_cost']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Име на продукта...'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'product_type': forms.Select(attrs={'class': 'form-select'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        self.fields['images'].widget.attrs.update({'multiple': True, 'class': 'form-control'})
 
 class ProductVariantForm(forms.ModelForm):
     class Meta:
         model = ProductVariant
-        fields = '__all__'
+        fields = ['size', 'stock']
         widgets = {
-            # Ödevdeki "Read-only veya Disabled field" gereksinimi
-            'product': forms.Select(attrs={'readonly': 'readonly', 'class': 'form-control-plaintext'}),
+            'size': forms.TextInput(attrs={'class': 'form-control'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
         }

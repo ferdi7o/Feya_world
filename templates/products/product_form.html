@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %} Редактиране на {{ object.title }} {% else %} Добавяне на нов продукт {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0 text-center">
+                    {% if object %} Редактиране на продукт {% else %} Добавяне на нов продукт {% endif %}
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            {% if object %} Запази промените {% else %} Публикувай продукта {% endif %}
+                        </button>
+                        <a href="{% if object %}{% url 'product_detail' object.id %}{% else %}{% url 'product_list' %}{% endif %}" class="btn btn-outline-secondary">
+                            Отказ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
