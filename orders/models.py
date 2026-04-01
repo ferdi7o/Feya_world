@@ -14,6 +14,7 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+    phone = models.CharField(max_length=15)
     address = models.TextField()
     city = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
@@ -22,7 +23,7 @@ class Order(models.Model):
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total_paid = models.DecimalField(max_digits=10, decimal_places=2)
 
-    payment_method = models.CharField(max_length=50, default="Наложен платеж (Kapıda Ödeme)")
+    payment_method = models.CharField(max_length=50, default="Наложен платеж")
 
     def __str__(self):
         return f"Поръчка #{self.id} - {self.user.username}"

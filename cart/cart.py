@@ -1,4 +1,7 @@
 from decimal import Decimal
+
+from django.utils.timezone import override
+
 from products.models import Product
 
 
@@ -10,19 +13,24 @@ class Cart:
             cart = self.session['cart'] = {}
         self.cart = cart
 
-    def add(self, product, quantity=1, size=None):
+    def add(self, product, quantity=1, variant=None, override_quantity=False):
         product_id = str(product.id)
-        # Beden seçimi varsa anahtara ekleyelim (Örn: "5-XL")
-        item_key = f"{product_id}-{size}" if size else product_id
+
+        item_key = f"{product_id}-{variant.id}" if variant else product_id
 
         if item_key not in self.cart:
             self.cart[item_key] = {
                 'quantity': 0,
                 'price': str(product.price),
-                'size': size,
+                'variant_id': variant.id if variant else None,
                 'product_id': product_id
             }
-        self.cart[item_key]['quantity'] += quantity
+
+        if override_quantity:
+            self.cart[item_key]['quantity'] = quantity
+        else:
+            self.cart[item_key]['quantity'] += quantity
+
         self.save()
 
     def save(self):

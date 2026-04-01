@@ -46,21 +46,38 @@
         <p class="text-muted">Категория: {{ product.category.name }}</p>
         <h3 class="text-primary my-3">{{ product.price }} €</h3>
 
-        <div class="my-4 p-3 bg-light rounded">
+        <div class="my-4 p-3 bg-light rounded shadow-sm">
             <h5>Изберете опции:</h5>
-            {% if product.product_type == 'tshirt' or product.product_type == 'towel' or product.product_type == 'blanket' %}
-                <select class="form-select mb-3">
-                    <option selected>Изберете размер (Size)</option>
-                    {% for variant in product.variants.all %}
-                        <option value="{{ variant.id }}">{{ variant.size }} (Налично: {{ variant.stock }})</option>
-                    {% endfor %}
-                </select>
-            {% else %}
-                <p class="text-info">Този продукт е със стандартен размер.</p>
-            {% endif %}
 
-            <button class="btn btn-success btn-lg w-100">Добави в количката</button>
-        </div>
+            <form action="{% url 'cart_add' product.id %}" method="post">
+                {% csrf_token %}
+
+                {% if product.product_type == 'tshirt' or product.product_type == 'towel' or product.product_type == 'blanket' %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Изберете размер (Size):</label>
+                        <select name="variant_id" class="form-select" required>
+                            <option value="" disabled selected>Изберете размер...</option>
+                            {% for variant in product.variants.all %}
+                                {% if variant.stock > 0 %}
+                                    <option value="{{ variant.id }}">{{ variant.size }} (Налично: {{ variant.stock }})</option>
+                                {% else %}
+                                    <option value="{{ variant.id }}" disabled>{{ variant.size }} (Изчерпано)</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Количество:</label>
+                    <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 100px;">
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">
+                    <i class="bi bi-cart-plus"></i> Добави в количката
+                </button>
+            </form>
+            </div>
 
         {% if product.is_shipping_free %}
             <p class="text-success fw-bold">✓ Безплатна доставка!</p>

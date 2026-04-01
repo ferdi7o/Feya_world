@@ -3,31 +3,55 @@
 {% block title %}Вашата количка{% endblock %}
 
 {% block content %}
-<h2>Вашата количка</h2>
-<table class="table mt-4">
-    <thead>
-        <tr>
-            <th>Продукт</th>
-            <th>Размер</th>
-            <th>Количество</th>
-            <th>Цена</th>
-            <th>Общо</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in cart %}
-        <tr>
-            <td>{{ item.product.title }}</td>
-            <td>{{ item.size|default:"-" }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.price }} лв.</td>
-            <td>{{ item.total_price }} лв.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<div class="text-end">
-    <h4>Общо: {{ cart.get_total_price }} лв.</h4>
-    <a href="{% url 'order_create' %}" class="btn btn-primary btn-lg">Завърши поръчката</a>
+<div class="container mt-5">
+    <h2 class="mb-4">Вашата количка <i class="bi bi-cart3"></i></h2>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Продукт</th>
+                        <th>Размер</th>
+                        <th class="text-center">Количество</th>
+                        <th>Цена</th>
+                        <th class="text-end">Общо</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr>
+                        <td>
+                            <span class="fw-bold text-dark">{{ item.product.title }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {% if item.variant %}{{ item.variant.size }}{% else %}-{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            {{ item.quantity }}
+                        </td>
+                        <td>{{ item.price }} €</td>
+                        <td class="text-end fw-bold">{{ item.total_price }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="row mt-4 align-items-center">
+                <div class="col-md-6">
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Продължи с пазаруването
+                    </a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h4 class="mb-3">Общо: <span class="text-success">{{ cart.get_total_price }} €</span></h4>
+                    <a href="{% url 'order_create' %}" class="btn btn-primary btn-lg px-5 shadow">
+                        Завърши поръчката <i class="bi bi-check2-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
