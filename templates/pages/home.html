@@ -3,28 +3,44 @@
 {% block title %}Начало - Печатница за Тениски{% endblock %}
 
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
-    <div class="container-fluid py-5">
-        <h1 class="display-5 fw-bold text-primary">Добре дошли в нашия магазин!</h1>
-        <p class="col-md-8 fs-4">Персонализирани тениски, чаши, кърпи и много други с високо качество на печат.</p>
-        <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg">Виж всички продукти</a>
-    </div>
-</div>
 
 <h2 class="mb-4">Най-новите ни предложения</h2>
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
     {% for product in latest_products %}
     <div class="col">
-        <div class="card h-100 shadow-sm border-0">
-            {% with product.images.first as main_img %}
-                {% if main_img %}
-                    <img src="{{ main_img.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-                {% endif %}
-            {% endwith %}
-            <div class="card-body">
-                <h5 class="card-title">{{ product.title }}</h5>
-                <p class="card-text text-success fw-bold">{{ product.price }} лв.</p>
-                <a href="{% url 'product_detail' product.pk %}" class="btn btn-outline-dark w-100">Виж повече</a>
+        <div class="card h-100 shadow-sm border-0 overflow-hidden">
+
+            <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none">
+                <div style="height: 220px; background-color: #ffffff; display: flex; align-items: center; justify-content: center; padding: 10px;">
+                    {% with product.images.first as main_img %}
+                        {% if main_img %}
+                            <img src="{{ main_img.image.url }}"
+                                 class="card-img-top"
+                                 alt="{{ product.title }}"
+                                 style="max-height: 100%; max-width: 100%; width: auto; height: auto; object-fit: contain;">
+                        {% else %}
+                            <div class="text-center">
+                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted small m-0">Няма снимка</p>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </a>
+
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title h6 text-dark fw-bold mb-1">
+                    <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none text-dark">
+                        {{ product.title }}
+                    </a>
+                </h5>
+                <p class="card-text text-success fw-bold mb-3">{{ product.price }} €</p>
+
+                <div class="mt-auto">
+                    <a href="{% url 'product_detail' product.pk %}" class="btn btn-outline-dark w-100 btn-sm">
+                        Виж повече
+                    </a>
+                </div>
             </div>
         </div>
     </div>
