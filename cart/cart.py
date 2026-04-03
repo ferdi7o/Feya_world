@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.utils.timezone import override
 
-from products.models import Product
+from products.models import Product, ProductVariant
 
 
 class Cart:
@@ -37,10 +37,18 @@ class Cart:
         self.session.modified = True
 
     def __iter__(self):
-        for item_key, item in self.cart.items():
-            product = Product.objects.get(id=item['product_id'])
-            item['product'] = product
-            item['total_price'] = Decimal(item['price']) * item['quantity']
+        cart = self.cart.copy()
+
+        for key, item in cart.items():
+            item['key'] = key
+            item['product'] = Product.objects.get(id=item['product_id'])
+            item['total_price'] = float(item['price']) * item['quantity']
+
+            if item.get('variant_id'):
+                item['variant'] = ProductVariant.objects.get(id=item['variant_id'])
+            else:
+                item['variant'] = None
+
             yield item
 
     def get_total_price(self):
@@ -49,3 +57,8 @@ class Cart:
     def clear(self):
         del self.session['cart']
         self.save()
+
+    def remove(self, item_key):
+        if item_key in self.cart:
+            del self.cart[item_key]
+            self.save()

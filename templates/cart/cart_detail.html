@@ -4,41 +4,49 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Вашата количка <i class="bi bi-cart3"></i></h2>
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <table class="table align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Продукт</th>
-                        <th>Размер</th>
-                        <th class="text-center">Количество</th>
-                        <th>Цена</th>
-                        <th class="text-end">Общо</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart %}
-                    <tr>
-                        <td>
-                            <span class="fw-bold text-dark">{{ item.product.title }}</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">
-                                {% if item.variant %}{{ item.variant.size }}{% else %}-{% endif %}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            {{ item.quantity }}
-                        </td>
-                        <td>{{ item.price }} €</td>
-                        <td class="text-end fw-bold">{{ item.total_price }} €</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <h2>Вашата количка</h2>
+    <div class="card shadow-sm border-0 p-3">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Продукт</th>
+                    <th>Размер</th>
+                    <th class="text-center">Количество</th>
+                    <th>Цена</th>
+                    <th class="text-end">Общо</th>
+                    <th class="text-center">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                <tr>
+                    <td>
+                        <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark fw-bold hover-primary">
+                            {{ item.product.title }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">
+                            {% if item.variant %}{{ item.variant.size }}{% else %}-{% endif %}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td>{{ item.price }} €</td>
+                    <td class="text-end fw-bold">{{ item.total_price }} €</td>
+                    <td class="text-center">
+                        <form action="{% url 'cart_remove' item.key %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm text-danger border-0">
+                                <i class="bi bi-trash"></i> Изтрий
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-            <div class="row mt-4 align-items-center">
+        <div class="row mt-4 align-items-center">
                 <div class="col-md-6">
                     <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Продължи с пазаруването
@@ -52,6 +60,9 @@
                 </div>
             </div>
         </div>
+
+
+
     </div>
 </div>
 {% endblock %}

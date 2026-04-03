@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Order, OrderItem
@@ -11,13 +13,30 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
     form_class = OrderCreateForm
     template_name = 'orders/order_create.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart = Cart(self.request)
+        total_price = cart.get_total_price()
+
+        free_shipping_limit = Decimal('50.00') # orders over 50 euro is FREE
+        shipping_cost = Decimal('5.00') if total_price < free_shipping_limit else Decimal('0.00')
+
+        context['cart'] = cart
+        context['shipping_cost'] = shipping_cost
+        context['free_limit'] = free_shipping_limit
+        context['remaining_for_free'] = free_shipping_limit - total_price
+        context['grand_total'] = total_price + shipping_cost
+        return context
+
     def form_valid(self, form):
         cart = Cart(self.request)
         order = form.save(commit=False)
         order.user = self.request.user
 
         total_price = cart.get_total_price()
-        shipping = 10.00 if total_price < 100 else 0.00
+
+        free_shipping_limit = Decimal('50.00')
+        shipping = Decimal('5.00') if total_price < free_shipping_limit else Decimal('0.00')
 
         order.shipping_cost = shipping
         order.total_paid = total_price + shipping
@@ -29,7 +48,7 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
                 product=item['product'],
                 price=item['price'],
                 quantity=item['quantity'],
-                size=item.get('size')
+                size=item['variant'].size if item.get('variant') else "-"
             )
 
         cart.clear()
