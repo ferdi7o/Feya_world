@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Детайли на поръчка #{{ object.id }}</h5>
+                    <span class="badge bg-warning text-dark px-3">{{ object.get_status_display }}</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-3">Информация за клиента</h6>
+                            <p class="mb-1"><strong>Име:</strong> {{ object.first_name }} {{ object.last_name }}</p>
+                            <p class="mb-1"><strong>Телефон:</strong> {{ object.phone }}</p>
+                            <p class="mb-1"><strong>Град:</strong> {{ object.city }}</p>
+                            <p class="mb-0"><strong>Адрес:</strong> {{ object.address }}</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-3">Дата на поръчка</h6>
+                            <p class="mb-0">{{ object.created|date:"d F Y, H:i" }}</p>
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3">Поръчани продукти</h6>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th class="text-center">Размер</th>
+                                    <th class="text-center">Количество</th>
+                                    <th class="text-end">Цена</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in object.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ item.product.image.url }}" class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                                            <span class="fw-bold">{{ item.product.title }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ item.size|default:"-" }}</td>
+                                    <td class="text-center">{{ item.quantity }} бр.</td>
+                                    <td class="text-end fw-bold">{{ item.price }} €</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end text-muted">Доставка:</td>
+                                    <td class="text-end fw-bold">{{ object.shipping_cost }} €</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td colspan="3" class="text-end fw-bold">Общо за плащане:</td>
+                                    <td class="text-end fw-bold fs-5 text-primary">{{ object.total_paid }} €</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0 fw-bold">Управление на статуса</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">ПРОМЕНИ ТЕКУЩ СТАТУС:</label>
+                            <div class="p-3 bg-light rounded border">
+                                {{ form.status }}
+                            </div>
+                            {% if form.status.errors %}
+                                <div class="text-danger small mt-1">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                                <i class="bi bi-check-lg me-2"></i>Запази промените
+                            </button>
+                            <a href="{% url 'moderator_order_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light p-3">
+                    <p class="small text-muted mb-0 text-center">
+                        <i class="bi bi-info-circle me-1"></i>
+                        След промяна на статуса, клиентът ще получи актуализация в своя профил.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        font-weight: 500;
+    }
+    .sticky-top {
+        z-index: 10;
+    }
+</style>
+{% endblock %}

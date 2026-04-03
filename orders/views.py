@@ -1,6 +1,7 @@
 from decimal import Decimal
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.urls import reverse
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Order, OrderItem
 from .forms import OrderCreateForm
@@ -18,8 +19,13 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         cart = Cart(self.request)
         total_price = cart.get_total_price()
 
-        free_shipping_limit = Decimal('50.00') # orders over 50 euro is FREE
-        shipping_cost = Decimal('5.00') if total_price < free_shipping_limit else Decimal('0.00')
+        has_free_shipping_product = any(item['product'].is_shipping_free for item in cart)
+        free_shipping_limit = Decimal('50.00')
+
+        if has_free_shipping_product or total_price >= free_shipping_limit:
+            shipping_cost = Decimal('0.00')
+        else:
+            shipping_cost = max((Decimal(str(item['product'].shipping_cost)) for item in cart), default=Decimal('0.00'))
 
         context['cart'] = cart
         context['shipping_cost'] = shipping_cost
@@ -32,11 +38,15 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         cart = Cart(self.request)
         order = form.save(commit=False)
         order.user = self.request.user
-
         total_price = cart.get_total_price()
 
+        has_free_shipping_product = any(item['product'].is_shipping_free for item in cart)
         free_shipping_limit = Decimal('50.00')
-        shipping = Decimal('5.00') if total_price < free_shipping_limit else Decimal('0.00')
+
+        if has_free_shipping_product or total_price >= free_shipping_limit:
+            shipping = Decimal('0.00')
+        else:
+            shipping = max((Decimal(str(item['product'].shipping_cost)) for item in cart), default=Decimal('0.00'))
 
         order.shipping_cost = shipping
         order.total_paid = total_price + shipping
@@ -55,7 +65,7 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return f"/orders/status/{self.object.id}/"
+        return reverse('order_detail', kwargs={'pk': self.object.id})
 
 class OrderListView(LoginRequiredMixin, ListView):
     model = Order
@@ -81,3 +91,12 @@ class OrderStatusUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
 
     def test_func(self):
         return self.request.user.is_moderator
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'orders/order_detail.html'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)

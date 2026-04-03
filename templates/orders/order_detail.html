@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Поръчка #{{ order.id }} <small class="text-muted">({{ order.created|date:"d.m.Y H:i" }})</small></h2>
+        <span class="badge bg-warning text-dark fs-6">{{ order.get_status_display }}</span>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Продукт</th>
+                                <th class="text-center">Размер</th>
+                                <th class="text-center">Количество</th>
+                                <th class="text-end">Цена</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{% if item.product.images.first %}{{ item.product.images.first.image.url }}{% elif item.product.image %}{{ item.product.image.url }}{% else %}/static/images/no-image.png{% endif %}"
+                                         class="rounded me-3"
+                                         style="width: 50px; height: 50px; object-fit: cover;"
+                                         alt="{{ item.product.title }}">
+                                        <span class="fw-bold">{{ item.product.title }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ item.size|default:"-" }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end fw-bold">{{ item.price }} €</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-4 bg-white">
+                <h5 class="fw-bold border-bottom pb-2 mb-3">Информация за доставка</h5>
+                <p class="small mb-1 text-muted">Име: <strong>{{ order.first_name }} {{ order.last_name }}</strong></p>
+                <p class="small mb-1 text-muted">Тел: <strong>{{ order.phone }}</strong></p>
+                <p class="small mb-3 text-muted">Адрес: <strong>{{ order.city }}, {{ order.address }}</strong></p>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Доставка:</span>
+                    <span class="fw-bold">{{ order.shipping_cost }} €</span>
+                </div>
+                <div class="d-flex justify-content-between fs-5 fw-bold text-primary">
+                    <span>Общо:</span>
+                    <span>{{ order.total_paid }} €</span>
+                </div>
+            </div>
+            <a href="{% url 'order_list' %}" class="btn btn-outline-secondary w-100 mt-3">Назад към списъка</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

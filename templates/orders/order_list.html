@@ -3,7 +3,7 @@
 {% block title %}Моите Поръчки{% endblock %}
 
 {% block content %}
-<h3>Вашите поръчки (Sipariş Takibi)</h3>
+<h3>Вашите поръчки</h3>
 <table class="table table-hover mt-4 shadow-sm">
     <thead class="table-dark">
         <tr>
@@ -15,16 +15,18 @@
     </thead>
     <tbody>
         {% for order in orders %}
-        <tr>
-            <td>#{{ order.id }}</td>
+        <tr onclick="window.location='{% url 'order_detail' order.id %}';"
+            style="cursor: pointer;"
+            class="order-row">
+
+            <td class="fw-bold text-primary">#{{ order.id }}</td>
             <td>{{ order.created|date:"d.m.Y H:i" }}</td>
             <td>
-                <span class="badge
-                    {% if order.status == 'Pending' %}bg-warning{% elif order.status == 'Shipped' %}bg-primary{% else %}bg-success{% endif %}">
+                <span class="badge {% if order.status == 'delivered' %}bg-success{% else %}bg-warning text-dark{% endif %}">
                     {{ order.get_status_display }}
                 </span>
             </td>
-            <td>{{ order.total_paid }} лв.</td>
+            <td class="fw-bold">{{ order.total_paid }} €</td>
         </tr>
         {% endfor %}
     </tbody>
