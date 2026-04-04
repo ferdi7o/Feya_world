@@ -40,7 +40,9 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ item.product.image.url }}" class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                                            <img src="{% if item.product.image %}{{ item.product.image.url }}{% elif item.product.images.first %}{{ item.product.images.first.image.url }}{% else %}/static/images/no-image.png{% endif %}"
+                                             class="rounded me-3"
+                                             style="width: 45px; height: 45px; object-fit: cover;">
                                             <span class="fw-bold">{{ item.product.title }}</span>
                                         </div>
                                     </td>
