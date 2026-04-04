@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView
-from .models import Product, Review, ProductImage
-from django.shortcuts import redirect
+from .models import Product, Review, ProductImage, Category
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from .forms import ReviewForm, ProductForm
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -90,3 +90,30 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         for img in images:
             ProductImage.objects.create(product=self.object, image=img)
         return response
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'products/product_list.html'
+    context_object_name = 'products'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_slug = self.kwargs.get('category_slug')
+
+        if category_slug:
+            category = Category.objects.filter(slug__iexact=category_slug).first()
+            if category:
+                return queryset.filter(category=category)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_slug = self.kwargs.get('category_slug')
+
+        if category_slug:
+            context['category'] = Category.objects.filter(slug__iexact=category_slug).first()
+
+        return context
