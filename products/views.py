@@ -94,7 +94,7 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'products/product_form.html'  # CreateView ile aynı template'i kullanabiliriz
+    template_name = 'products/product_form.html'
 
     def test_func(self):
         return self.request.user.is_moderator
@@ -102,12 +102,30 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('product_detail', kwargs={'pk': self.object.pk})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['variants'] = ProductVariantFormSet(self.request.POST, instance=self.object)
+        else:
+            context['variants'] = ProductVariantFormSet(instance=self.object)
+        return context
+
     def form_valid(self, form):
-        response = super().form_valid(form)
-        images = self.request.FILES.getlist('images')
-        for img in images:
-            ProductImage.objects.create(product=self.object, image=img)
-        return response
+        context = self.get_context_data()
+        variants = context['variants']
+
+        if form.is_valid() and variants.is_valid():
+            self.object = form.save()
+            variants.instance = self.object
+            variants.save()
+
+            images = self.request.FILES.getlist('images')
+            for img in images:
+                ProductImage.objects.create(product=self.object, image=img)
+
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 
 class ProductListView(ListView):

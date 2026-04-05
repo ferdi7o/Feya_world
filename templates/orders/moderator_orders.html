@@ -3,14 +3,14 @@
 {% block title %}Модераторски Панел{% endblock %}
 
 {% block content %}
-<h2 class="text-danger">Управление на поръчки</h2>
-<div class="card p-3">
-    <table class="table">
-        <thead>
+<h2 class="text-danger my-4">Управление на поръчки</h2>
+<div class="card shadow-sm p-3">
+    <table class="table align-middle">
+        <thead class="table-light">
             <tr>
                 <th>Потребител</th>
                 <th>Адрес</th>
-                <th>Текущ Статус</th>
+                <th class="text-center">Текущ Статус</th>
                 <th>Действие</th>
             </tr>
         </thead>
@@ -19,14 +19,40 @@
             <tr>
                 <td>{{ order.user.username }}</td>
                 <td>{{ order.city }}, {{ order.address }}</td>
-                <td><strong>{{ order.get_status_display }}</strong></td>
+
+                <td class="text-center">
+                    {% with status=order.get_status_display %}
+                        {% if status == 'Изчакващ' %}
+                            <span class="badge bg-warning text-dark p-2 w-75">
+                                <i class="bi bi-clock"></i> {{ status }}
+                            </span>
+                        {% elif status == 'Изпратен' %}
+                            <span class="badge bg-primary p-2 w-75">
+                                <i class="bi bi-truck"></i> {{ status }}
+                            </span>
+                        {% elif status == 'Доставен' %}
+                            <span class="badge bg-success p-2 w-75">
+                                <i class="bi bi-check-circle"></i> {{ status }}
+                            </span>
+                        {% elif status == 'Отказан' %}
+                            <span class="badge bg-danger p-2 w-75">
+                                <i class="bi bi-x-circle"></i> {{ status }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary p-2 w-75">
+                                {{ status }}
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
                 <td>
-                    <a href="{% url 'order_status_update' order.id %}" class="btn btn-sm btn-outline-info">Промени Статус</a>
+                    <a href="{% url 'order_status_update' order.id %}" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-pencil-square"></i> Промени Статус
+                    </a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
-    </tbody>
-</table>
+    </table>
 </div>
 {% endblock %}

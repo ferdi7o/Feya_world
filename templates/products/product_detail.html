@@ -104,57 +104,101 @@
     </div>
 </div>
 
-<hr class="my-5">
-<div class="row">
-    <div class="col-md-8">
-        <h4>Коментари и Оценки</h4>
-        {% for review in reviews %}
-            <div class="card mb-3 p-3">
-                <div class="d-flex justify-content-between">
-                    <strong>{{ review.user.username }}</strong>
-                    <span class="badge bg-warning text-dark">{{ review.rating }} / 10 ★</span>
+<hr class="my-5 border-0"> <div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="fw-bold mb-0">Отзиви от клиенти <span class="text-muted small">({{ reviews.count }})</span></h4>
+            {% if reviews %}
+                <div class="badge bg-light text-dark border p-2 rounded-pill">
+                    <span class="text-warning">★</span>
+                    Отзиви за продукта
                 </div>
-                <p class="mt-2">{{ review.content }}</p>
-            </div>
-        {% empty %}
-            <p>Все още няма коментари. Бъдете първият!</p>
-        {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="reviews-container">
+            {% for review in reviews %}
+                <div class="card mb-3 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-circle me-3 bg-primary text-white d-flex align-items-center justify-content-center fw-bold rounded-circle" style="width: 45px; height: 45px;">
+                                {{ review.user.username|first|upper }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold">{{ review.user.username }}</h6>
+                                <small class="text-muted small">{{ review.created_at|date:"d M Y" }}</small>
+                            </div>
+                            <div class="rating-badge">
+                                <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                    <i class="bi bi-star-fill me-1"></i> {{ review.rating }} / 10
+                                </span>
+                            </div>
+                        </div>
+                        <p class="card-text text-secondary lh-base mb-0 italic">
+                            "{{ review.content }}"
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5 bg-light rounded-4 border-dashed border-2">
+                    <i class="bi bi-chat-dots fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">Все още няма коментари. Бъдете първият!</p>
+                </div>
+            {% endfor %}
+        </div>
 
         {% if user.is_authenticated %}
-            <div class="card p-4 mt-4">
-                <h5>Остави коментар</h5>
-                <p class="text-muted small">Можете да дадете оценка от 1 до 10.</p>
+            <div class="card p-4 mt-5 border-0 shadow-lg rounded-4 bg-white">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Споделете вашето мнение</h5>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" class="needs-validation">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold text-dark small">Вашата оценка (1-10)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-warning border-radius-start-3"><i class="bi bi-star"></i></span>
+                                {{ review_form.rating }} </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-semibold text-dark small">Вашият коментар</label>
+                            {{ review_form.content }} </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm transition-all hover-up">
+                                <i class="bi bi-send-fill me-2"></i> Изпрати коментар
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert bg-light border-0 text-center p-5 mt-4 rounded-4">
+                <p class="mb-3 text-muted">Искате да оставите мнение?</p>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary rounded-pill px-4">
+                    Влезте в профила си
+                </a>
             </div>
         {% endif %}
-
-    {% if user.is_authenticated %}
-        <div class="card p-4 mt-4 shadow-sm">
-            <h5>Оставете вашето мнение</h5>
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    {{ review_form.rating.label_tag }}
-                    {{ review_form.rating }}
-                </div>
-                <div class="mb-3">
-                    {{ review_form.content.label_tag }}
-                    {{ review_form.content }}
-                </div>
-                <button type="submit" class="btn btn-primary">Изпрати коментар</button>
-            </form>
-        </div>
-    {% else %}
-        <div class="alert alert-info mt-4">
-            Моля, <a href="{% url 'login' %}">влезте</a>, за да оставите коментар.
-        </div>
-    {% endif %}
     </div>
 </div>
+
+<style>
+    .rounded-4 { border-radius: 1rem !important; }
+    .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.04) !important; }
+    .shadow-lg { box-shadow: 0 1rem 3rem rgba(0,0,0,.08) !important; }
+    .avatar-circle { font-size: 1.2rem; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .hover-up:hover { transform: translateY(-3px); transition: all 0.3s ease; }
+    .bg-primary { background-color: #4a6cf7 !important; }
+    textarea.form-control { border-radius: 12px; border: 1px solid #eee; padding: 12px; }
+    input.form-control { border-radius: 0 12px 12px 0; border: 1px solid #eee; }
+</style>
 {% endblock %}

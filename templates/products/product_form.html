@@ -65,29 +65,36 @@
                     </button>
                 </div>
 
-                <script>
-                    const addBtn = document.getElementById('add-variant-btn');
-                    const totalForms = document.getElementById('id_products-0-TOTAL_FORMS'); // Not: 'products' uygulama adın veya prefix'indir, kontrol et
-                    const formList = document.getElementById('variant-form-list');
+<script>
+    document.getElementById('add-variant-btn').addEventListener('click', function() {
+        const formList = document.getElementById('variant-form-list');
+        // Prefix kullandığımız için ID artık 'id_variants-TOTAL_FORMS' oldu
+        const totalFormsInput = document.getElementById('id_variants-TOTAL_FORMS');
+        const currentFormCount = parseInt(totalFormsInput.value);
 
-                    addBtn.addEventListener('click', () => {
-                        const currentFormCount = document.querySelectorAll('.variant-form').length;
-                        const formCopy = document.querySelectorAll('.variant-form')[0].cloneNode(true);
+        const forms = document.getElementsByClassName('variant-form');
+        if (forms.length === 0) {
+            alert("Kopyalanacak satır bulunamadı! Lütfen sayfayı yenileyin.");
+            return;
+        }
 
-                        // Input isimlerini ve ID'lerini güncelle (Django'nun anlaması için şart)
-                        formCopy.innerHTML = formCopy.innerHTML.replace(/-0-/g, `-${currentFormCount}-`);
+        const newForm = forms[0].cloneNode(true);
 
-                        // Yeni satırdaki değerleri temizle
-                        const inputs = formCopy.querySelectorAll('input');
-                        inputs.forEach(input => { if(input.type !== 'hidden') input.value = ''; });
+        // ID ve Name alanlarını güncelle (0 -> 1, 1 -> 2 gibi)
+        const formRegex = new RegExp(`-0-`, 'g'); // İlk satır hep 0'dır
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `-${currentFormCount}-`);
 
-                        formList.appendChild(formCopy);
+        // İçini temizle
+        const inputs = newForm.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.type !== 'hidden') input.value = '';
+            if (input.type === 'checkbox') input.checked = false;
+        });
 
-                        // Toplam form sayısını arttır
-                        const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
-                        totalFormsInput.value = currentFormCount + 1;
-                    });
-                </script>
+        formList.appendChild(newForm);
+        totalFormsInput.value = currentFormCount + 1;
+    });
+</script>
 
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-success btn-lg">
