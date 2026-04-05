@@ -21,12 +21,17 @@ class ProfileUpdateForm(forms.ModelForm):
             'address': 'Адрес',
         }
         widgets = {
-            'phone': forms.TextInput(attrs={'rows': 2, 'placeholder': '+359...'}),
+            'phone': forms.TextInput(attrs={'placeholder': '+359...'}),
             'address': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Адрес за доставка...'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email'].disabled = True
+        self.fields['email'].required = False
+        self.fields['email'].widget.attrs['readonly'] = True
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control',
+            'style': 'background-color: #e9ecef; cursor: not-allowed;'
+        })
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})

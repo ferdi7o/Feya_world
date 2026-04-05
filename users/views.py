@@ -24,3 +24,8 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user.profile
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['email'] = self.request.user.email
+        return initial
