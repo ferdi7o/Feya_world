@@ -1,7 +1,9 @@
 from decimal import Decimal
 
+from django.db.models import F
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic import CreateView, ListView, UpdateView, DetailView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Order, OrderItem
 from .forms import OrderCreateForm
@@ -36,6 +38,16 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         cart = Cart(self.request)
+
+        for item in cart:
+            if item.get('variant'):
+                variant = item['variant']
+                if variant.stock < item['quantity']:
+                    from django.contrib import messages
+                    messages.error(self.request,
+                                   f"Извинете, наличността за {item['product'].title} ({variant.size}) свърши. Налични: {variant.stock}")
+                    return redirect('cart_detail')
+
         order = form.save(commit=False)
         order.user = self.request.user
         total_price = cart.get_total_price()
@@ -61,8 +73,23 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
                 size=item['variant'].size if item.get('variant') else "-"
             )
 
+            if item.get('variant'):
+                variant = item['variant']
+                variant.stock = F('stock') - item['quantity']
+                variant.save()
+
         cart.clear()
-        return super().form_valid(form)
+
+        return redirect('order_success')
+
+    def finalize_order(order):
+        for item in order.items.all():
+            variant = item.product_variant  # order size (L, M vb.)
+            if variant.stock >= item.quantity:
+                variant.stock -= item.quantity
+                variant.save()
+            else:
+                pass
 
     def get_success_url(self):
         return reverse('order_detail', kwargs={'pk': self.object.id})
@@ -100,3 +127,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
+
+
+class OrderSuccessView(LoginRequiredMixin, TemplateView):
+    template_name = 'orders/order_success.html'

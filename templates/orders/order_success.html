@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Успешна поръчка{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-lg p-5 border-0">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h1 class="display-5 fw-bold text-dark">Благодарим ви за поръчката!</h1>
+                <p class="lead text-muted mt-3">
+                    Вашата поръчка беше получена успешно и се обработва.
+                    Можете да следите поръчките си от страницата „Моите поръчки“.
+                </p>
+                <hr class="my-4">
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg px-4 gap-3">
+                        Към магазина
+                    </a>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-lg px-4">
+                        Моите поръчки
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

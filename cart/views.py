@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product, ProductVariant
 from .cart import Cart
@@ -16,8 +17,14 @@ def cart_add(request, product_id):
 
     variant_id = request.POST.get('variant_id')
     variant = None
+
     if variant_id:
         variant = get_object_or_404(ProductVariant, id=variant_id)
+
+        if variant.stock < quantity:
+            messages.error(request,
+                           f"Съжаляваме, от този размер ({variant.size}) имаме само {variant.stock} налични броя.")
+            return redirect('product_detail', pk=product.id)
 
     cart.add(product=product, quantity=quantity, variant=variant)
 

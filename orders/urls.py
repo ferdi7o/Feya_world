@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import OrderCreateView, OrderListView, ModeratorOrderListView, OrderStatusUpdateView, OrderDetailView
+from .views import OrderCreateView, OrderListView, ModeratorOrderListView, OrderStatusUpdateView, OrderDetailView, \
+    OrderSuccessView
 
 urlpatterns = [
     path('create/', OrderCreateView.as_view(), name='order_create'),
@@ -7,4 +8,5 @@ urlpatterns = [
     path('moderator-panel/', ModeratorOrderListView.as_view(), name='moderator_order_list'),
     path('status-update/<int:pk>/', OrderStatusUpdateView.as_view(), name='order_status_update'),
     path('detail/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
+    path('success/', OrderSuccessView.as_view(), name='order_success')
 ]

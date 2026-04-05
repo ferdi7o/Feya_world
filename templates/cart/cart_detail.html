@@ -32,7 +32,7 @@
                     </td>
                     <td class="text-center">{{ item.quantity }}</td>
                     <td>{{ item.price }} €</td>
-                    <td class="text-end fw-bold">{{ item.total_price }} €</td>
+                    <td class="text-end fw-bold">{{ item.total_price|floatformat:2 }} €</td>
                     <td class="text-center">
                         <form action="{% url 'cart_remove' item.key %}" method="post">
                             {% csrf_token %}
