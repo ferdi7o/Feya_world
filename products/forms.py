@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import inlineformset_factory
+
 from .models import Product, Review, ProductVariant
 
 class ReviewForm(forms.ModelForm):
@@ -56,6 +58,15 @@ class ProductVariantForm(forms.ModelForm):
         model = ProductVariant
         fields = ['size', 'stock']
         widgets = {
-            'size': forms.TextInput(attrs={'class': 'form-control'}),
-            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
+            'size': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Размер (напр. L, 42, XL)'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
         }
+
+
+ProductVariantFormSet = inlineformset_factory(
+    Product,
+    ProductVariant,
+    form=ProductVariantForm,
+    extra=1,
+    can_delete=True
+)

@@ -30,6 +30,65 @@
                         </div>
                     {% endfor %}
 
+                <div class="card p-3 mt-4">
+
+                    <h3>Размери и наличности</h3>
+                    {{ variants.management_form }}
+
+                    <div id="variant-form-list">
+                        {% for variant_form in variants %}
+                            <div class="variant-form row mb-2">
+                                <div class="col-md-5">
+                                    {{ variant_form.size.label_tag }}
+                                    {{ variant_form.size }}
+                                </div>
+                                <div class="col-md-5">
+                                    {{ variant_form.stock.label_tag }}
+                                    {{ variant_form.stock }}
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    {% if variants.can_delete %}
+                                        <div class="form-check mb-2">
+                                            {{ variant_form.DELETE }} <label>Изтрий</label>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% for hidden in variant_form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" id="add-variant-btn" class="btn btn-success mt-2" style="width: fit-content;">
+                        + Добави нов ред
+                    </button>
+                </div>
+
+                <script>
+                    const addBtn = document.getElementById('add-variant-btn');
+                    const totalForms = document.getElementById('id_products-0-TOTAL_FORMS'); // Not: 'products' uygulama adın veya prefix'indir, kontrol et
+                    const formList = document.getElementById('variant-form-list');
+
+                    addBtn.addEventListener('click', () => {
+                        const currentFormCount = document.querySelectorAll('.variant-form').length;
+                        const formCopy = document.querySelectorAll('.variant-form')[0].cloneNode(true);
+
+                        // Input isimlerini ve ID'lerini güncelle (Django'nun anlaması için şart)
+                        formCopy.innerHTML = formCopy.innerHTML.replace(/-0-/g, `-${currentFormCount}-`);
+
+                        // Yeni satırdaki değerleri temizle
+                        const inputs = formCopy.querySelectorAll('input');
+                        inputs.forEach(input => { if(input.type !== 'hidden') input.value = ''; });
+
+                        formList.appendChild(formCopy);
+
+                        // Toplam form sayısını arttır
+                        const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+                        totalFormsInput.value = currentFormCount + 1;
+                    });
+                </script>
+
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-success btn-lg">
                             {% if object %} Запази промените {% else %} Публикувай продукта {% endif %}

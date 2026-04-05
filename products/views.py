@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView
 from .models import Product, Review, ProductImage, Category
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from .forms import ReviewForm, ProductForm
+from .forms import ReviewForm, ProductForm, ProductVariantFormSet
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
@@ -56,13 +56,31 @@ class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.is_moderator
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        images = self.request.FILES.getlist('images')
-        for img in images:
-            ProductImage.objects.create(product=self.object, image=img)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['variants'] = ProductVariantFormSet(self.request.POST)
+        else:
+            context['variants'] = ProductVariantFormSet()
+        return context
 
-        return response
+    def form_valid(self, form):
+        context = self.get_context_data()
+        variants = context['variants']
+
+        if form.is_valid() and variants.is_valid():
+            self.object = form.save()
+
+            images = self.request.FILES.getlist('images')
+            for img in images:
+                ProductImage.objects.create(product=self.object, image=img)
+
+            variants.instance = self.object
+            variants.save()
+
+            return redirect(self.success_url)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
