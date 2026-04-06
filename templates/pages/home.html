@@ -4,6 +4,44 @@
 
 {% block content %}
 
+<div class="container my-5 pt-4">
+    <div class="row align-items-center bg-white p-5 rounded-5 shadow-lg border border-light transition-all hover-shadow-xl" style="background: linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%);">
+
+        <div class="col-md-5 text-center mb-5 mb-md-0 pe-md-4">
+            <div class="logo-wrapper p-2 bg-white rounded-pill d-inline-block shadow-sm border" style="transition: transform 0.3s ease;">
+                <img src="/static/images/FeyaWorld.png" alt="Feya World Logo" class="img-fluid" style="width: 100%; max-width: 450px; height: auto; object-fit: contain;">
+            </div>
+        </div>
+
+        <div class="col-md-7 ps-md-5">
+            <h1 class="display-3 fw-bold text-dark mb-3" style="letter-spacing: -2px; line-height: 1.1;">
+                Модерен печат върху <span class="text-primary position-relative">висококачествени<span class="position-absolute start-0 bottom-0 w-100 bg-primary opacity-10" style="height: 8px; transform: translateY(5px); rounded-pill;"></span></span> продукти!
+            </h1>
+            <p class="lead text-secondary mb-4 fs-5 lh-base opacity-75">
+                Ние не просто печатаме, ние вдъхваме живот на вашите идеи. С най-съвременните технологии и страст към детайла, **FeyaWorld** ви гарантира безкомпромисно качество, сигурност при всяка покупка и стил, който се забелязва.
+            </p>
+            <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill fw-medium transition-all hover-bg-light">
+                    За нас
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .rounded-5 { border-radius: 2.5rem !important; }
+    .text-primary { color: #4a6cf7 !important; }
+    .bg-primary { background-color: #4a6cf7 !important; }
+    .btn-primary { background-color: #4a6cf7; border: none; }
+    .logo-wrapper:hover { transform: scale(1.03) rotate(-1deg); }
+    .hover-shadow-xl:hover { box-shadow: 0 1.5rem 4rem rgba(0,0,0,0.1) !important; }
+    .hover-up:hover { transform: translateY(-3px); }
+    .transition-all { transition: all 0.3s ease-in-out; }
+    .display-3 { font-size: calc(1.8rem + 0.8vw); } /* Ekran boyutuna göre duyarlı yazı */
+</style>
+
 
 
 <h2 class="mb-4">Най-новите ни предложения</h2>
@@ -85,7 +123,7 @@
 </div>
 
 
-    <div class="bg-light py-5 mt-5 border-top">
+<div class="bg-light py-5 mt-5 border-top">
     <div class="container">
         <div class="row g-4 text-center">
             <div class="col-md-3">
