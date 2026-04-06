@@ -3,32 +3,56 @@
 {% block title %}Моите Поръчки{% endblock %}
 
 {% block content %}
-<h3>Вашите поръчки</h3>
-<table class="table table-hover mt-4 shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Дата</th>
-            <th>Статус</th>
-            <th>Обща сума</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr onclick="window.location='{% url 'order_detail' order.id %}';"
-            style="cursor: pointer;"
-            class="order-row">
+<div class="container my-5">
+    <h3 class="fw-bold mb-4">Вашите поръчки</h3>
 
-            <td class="fw-bold text-primary">#{{ order.id }}</td>
-            <td>{{ order.created|date:"d.m.Y H:i" }}</td>
-            <td>
-                <span class="badge {% if order.status == 'delivered' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                    {{ order.get_status_display }}
-                </span>
-            </td>
-            <td class="fw-bold">{{ order.total_paid }} €</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="table-responsive">
+        <table class="table table-hover shadow-sm rounded-3 overflow-hidden">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th>Обща сума</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr onclick="window.location='{% url 'order_detail' order.id %}';"
+                    style="cursor: pointer;"
+                    class="order-row align-middle">
+
+                    <td class="fw-bold text-primary">#{{ order.id }}</td>
+                    <td>{{ order.created|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'delivered' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="fw-bold">{{ order.total_paid }} €</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="py-4">
+                            <i class="bi bi-cart-x display-1 text-muted d-block mb-3"></i>
+                            <h4 class="fw-bold text-secondary">Все още нямате поръчки</h4>
+                            <p class="text-muted mb-4">Изглежда още не сте направили своята първа покупка.</p>
+                            <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                                Започнете да пазарувате
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .order-row:hover { background-color: rgba(74, 108, 247, 0.05) !important; transition: 0.3s; }
+    .table { border-collapse: separate; border-spacing: 0; }
+    .table thead th { border: none; }
+</style>
 {% endblock %}
