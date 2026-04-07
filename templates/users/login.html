@@ -3,22 +3,45 @@
 {% block title %}Вход - Печатница{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Вход в системата</h2>
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">Добре дошли!</h2>
+                    <p class="text-muted">Моля, влезте в профила си</p>
+                </div>
+
                 <form method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        {{ form.as_p }}
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Влез</button>
+
+                    {% for field in form %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-uppercase">{{ field.label }}</label>
+                            {{ field.errors }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+                                <input type="{{ field.field.widget.input_type }}"
+                                       name="{{ field.name }}"
+                                       class="form-control bg-light border-start-0 py-2"
+                                       placeholder="{{ field.label }}..."
+                                       required>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm" style="border-radius: 10px;">
+                            Влез в системата
+                        </button>
                     </div>
                 </form>
-                <div class="mt-3 text-center">
-                    <p>Нямате профил? <a href="{% url 'register' %}">Регистрирайте се тук</a></p>
+
+                <hr class="my-4 text-muted">
+
+                <div class="text-center">
+                    <p class="mb-0 text-muted small">Нямате профил?</p>
+                    <a href="{% url 'register' %}" class="text-decoration-none fw-bold">Създайте нов акаунт</a>
                 </div>
             </div>
         </div>
