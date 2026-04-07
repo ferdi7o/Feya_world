@@ -83,3 +83,10 @@ The project uses `python-dotenv` to manage sensitive information. Since the `.en
     DATABASE_PASSWORD=your_password
     
     ```
+
+## 🚀 Live Demo
+The project is officially deployed and accessible securely at the following address:
+
+**🌐 Live Site:** [https://feyaworld.duckdns.org/](https://feyaworld.duckdns.org/)
+
+> **Note:** The server is running on an AWS EC2 instance with SSL encryption provided by Let's Encrypt. Background tasks (like email notifications) are handled by Celery and Redis.
